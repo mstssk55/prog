@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<script src="js/jquery-2.1.3.min.js"></script>
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/sample.css">
+<title>半沢直樹</title>
+</head>
+<body>
+
+
+<header class="header">
+  <h1>半沢直樹ゲーム</h1>
+</header>
+
+<main>
+  <!-- オープニング画面 -->
+
+  <section class="opening">
+    <div class="logo">
+      <img src="img/logo.png" class="logo_eyecatch" alt="ロゴ画像">
+    </div>
+    <button class="btn_opening btn">ゲームを始める</button>
+
+
+  </section>
+
+  <!-- キャラクターセット -->
+  <section class="chara_set">
+    <div class="character">
+      <div class="hanzawa">
+        <img src="img/hanzawa.jpg" class="character_img" alt="半沢">
+      </div>
+      <div class="enemy">
+        <img src="img/isayama.jpg" class="character_img" alt="伊佐山">
+      </div>
+    </div>
+    <div class="true">
+      <div class="han_true">
+      </div>
+      <div class="enemy_true">
+      </div>
+    </div>
+    <div class="start">
+      <button class="btn_start btn">スタート</button>
+    </div>
+  </section>
+  
+  <!-- 第1ゲーム -->
+
+
+  <section class="game1">
+    <div class="qa">
+      <div class="question">
+        <p class="question_text">問題<span class="question_text_num">◯</span></p>
+        <div class="question_eye"></div>
+      </div>
+      <div class="answer">
+        <ul class="answer_list">
+          <li name="toi" value="1" class="answer_item item1"></li>
+          <li name="toi" value="2" class="answer_item item2"></li>
+          <li name="toi" value="3" class="answer_item item3"></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+    <!-- 第２ゲーム -->
+
+    <section class="game2">
+        <p class="q_count"><span class="q_count_num">◯</span>回戦</p>
+        <div class="card">
+          <div class="han_card">
+          </div>
+          <div class="enemy_card">
+          </div>
+        </div>
+        <div class="choice">
+          <button class="btn high">High</button>
+          <button class="btn low">Low</button>
+        </div>
+    </section>
+
+    <!-- ボタン類 -->
+
+    <section id="common">
+      <div class="timeup"></div>
+      <div id="next">
+        <div class="game1_fin">
+        </div>
+        <div class="game2_start">
+        </div>
+      </div>
+      <div class="finish_btn">
+        <button class="return_opening btn">最初から始める</button>
+        <button class="return_owada btn">大和田と再戦する</button>
+      </div>
+      <!-- <button class="btn_next_start btn">スタート</button> -->
+    </section>
+
+</main>
+
+
+<footer></footer>
+<script>
+
+
+
+let num =1;  //何問目かの表示
+let g1i = 0; 
+let han =0;
+let ene =0;
+
+
+
+  //オープニングボタン動きの関数-------------------------------------------------
+function opening (){
+  $("body").fadeIn(2000);
+  $("section:not(.opening)").hide();
+  $(".btn_opening").hide();
+  setTimeout(function(){
+    $(".btn_opening").slideDown(2000);
+  },1500);
+  $(".opening").show();
+  $(".hanzawa").html('<img src = "img/hanzawa.jpg" class="character_img">');
+  $(".enemy").html('<img src = "img/isayama.jpg" class="character_img">');
+  $(".true_img").remove();
+}
+
+function reset(){
+  g1i = 0; 
+  han =0;
+  ene =0;
+  num =1;
+  $("[name=toi]").off();
+  $(".high").off();
+  $(".low").off();
+};
+
+  opening();
+  $(".btn_opening").on("click",function(){
+    $(".opening").hide();
+    $(".chara_set").show();
+    $(".btn_start").show();
+  });
+
+
+
+// ゲーム１の問題・回答・答え----------------------------------------------------------------------------
+  const g1qs =[1,2,3,4,5];
+  const g1toi =[
+      ["1.知らない","2.え？","3.うるせぇ"],
+      ["1.はぁ？","2.おまえのまーけぇーー","3.詫びろ"],
+      ["1.詫びろ×６","2.詫びろ×７","3.詫びろ×8"],
+      ["1.ごみじゃない！","2.クズじゃない！","3.カスじゃない"],
+      ["1.ゴミ野郎","2.クソ野郎","3.土下座野郎"]
+
+  ];
+  const g1ans = [1,2,3,1,3];
+
+
+
+  // 問題繰り返し表示の関数-------------------------------------------------------------------------
+  function g1(a){
+    $(".question_eye").html('<img src = "img/game1/' + g1qs[a] + '.jpg" class="question_img">');
+    $(".item1").html(g1toi[a][0]);
+    $(".item2").html(g1toi[a][1]);
+    $(".item3").html(g1toi[a][2]);
+    $(".question_text_num").html(num);
+  }
+
+  //問題開始イベント-------------------------------------------------------------------------------
+
+
+
+  $(".btn_start").on("click",function(){
+    g1(g1i);
+    $(".btn_start").hide();
+    $(".game1").show();
+
+    $("[name=toi]").on("click",function(){
+        if($(this).val()==g1ans[g1i]){
+            $(".han_true").append('<img src="img/win.jpg" class="true_img" alt="">')
+            $(".enemy").html('<img src = "img/game1/isaout.jpg" class="character_img">');
+            $(this).css("background-color","#00FFFF");
+            $(".question_text").html("正解");
+            $(".question_text").css("color","#00FFFF");
+            setTimeout(function(){
+              $(".answer_item").css("background-color","#FFF100");
+              $(".question_text").html('問題<span class="question_text_num">◯</span>');
+              $(".question_text").css("color","#FFF100");
+
+
+
+            },1000);
+
+
+            if(num<5){
+              setTimeout(function(){
+                $(".enemy").html('<img src = "img/isayama.jpg" class="character_img">');
+
+              },1000);
+            }
+            han ++;
+
+
+        }else{
+            $(".enemy_true").append('<img src="img/win.jpg" class="true_img" alt="">')
+            $(".hanzawa").html('<img src = "img/hanout.jpg" class="character_img">');
+            $(this).css("background-color","#FF0000");
+            $(".question_text").html("不正解");
+            $(".question_text").css("color","#FF0000");
+
+            setTimeout(function(){
+              $(".answer_item").css("background-color","#FFF100");
+              $(".question_text").html('問題<span class="question_text_num">◯</span>');
+              $(".question_text").css("color","#FFF100");
+
+            },1000);
+
+
+            if(num<5){
+              setTimeout(function(){
+                $(".hanzawa").html('<img src = "img/hanzawa.jpg" class="character_img">');
+              },1000);
+            }
+            ene ++;
+        }
+        if(g1i < 4){
+          g1i ++;
+          num ++;
+          setTimeout(function(){
+              g1(g1i);
+          },1000);
+        }else{
+          $(".game1").hide();
+          $("#common").show();
+          $(".finish_btn").hide();
+          $(".game1_fin").show();
+          $(".game1_fin").html('<button class="btn">次のゲーム</button>');
+
+          if(han > ene){
+            $(".enemy").html('<img src = "img/game1/isalose.jpg" class="character_img">');
+            $(".hanzawa").html('<img src = "img/hanwin.jpg" class="character_img">');
+            $(".timeup").html("あなたの勝ち");            
+          }else{
+            $(".enemy").html('<img src = "img/game1/isawin.jpeg" class="character_img">');
+            $(".hanzawa").html('<img src = "img/hanlose.jpg" class="character_img">');
+            $(".timeup").html("あなたの負け");
+          }
+        }
+    });
+  });
+
+  //-------------------------------------------------------------------------------
+
+$(".game1_fin").on("click",function(){
+  $(".timeup").hide();
+  $(".true_img").remove();
+  $(".enemy").html('<img src = "img/owada.jpg" class="character_img">');
+  $(".hanzawa").html('<img src = "img/hanzawa.jpg" class="character_img">');
+  $(".game1_fin").hide();
+  $(".game2_start").html('<button class="btn">スタート</button>');
+  $(".game2_start").show();
+  reset();
+});    
+
+
+// game2の定義---------------------------------------------------------
+
+let h = 0;
+let o = 0;
+let time2 = 1000;
+
+// カード数字関数--------
+
+function g2(a){
+  function rand(a){
+    var rand = Math.floor( Math.random()*a + 1);
+    return rand;
+    }
+
+    h = rand(a);
+    o = rand(a);
+
+
+    if(h ==o ){
+      while(h == o){
+      o = rand(a);
+      }
+    }
+    $(".game2_start").hide();
+    $(".game2").show();
+    $(".choice").show();
+    $(".han_card").html('<img src="img/card/' + h + '.png" class="card_size" alt="">');
+    $(".q_count_num").html(num);
+    $(".enemy_card").html('<img src="img/card/0.png" class="card_size" alt="">');
+    
+};
+
+// high&lowクリック時の関数--------
+
+function highlow(){
+  $(".enemy_card").html('<img src="img/card/' + o + '.png" class="card_size" alt="">');
+  $(".choice").hide();
+  num++;
+};
+
+// 半沢正解時--------
+
+function hanwin2(){
+  $(".han_true").append('<img src="img/win.jpg" class="true_img" alt="">');
+  $(".enemy").html('<img src = "img/owadaout.jpeg" class="character_img">');
+  
+  $(".q_count").html("勝ち");
+  $(".q_count").css("color","#00FFFF");
+  setTimeout(function(){
+    $(".q_count").html('<span class="q_count_num">◯</span>回戦');
+    $(".q_count").css("color","#FFF100");
+  },1000);
+  han++;
+  if(num<6){
+
+    setTimeout(function(){
+      $(".enemy").html('<img src = "img/owada.jpg" class="character_img">');
+    },time2);
+  }
+};
+
+// 半沢不正解時----------
+
+function hanlose2(){
+  $(".enemy_true").append('<img src="img/win.jpg" class="true_img" alt="">');
+  $(".hanzawa").html('<img src = "img/hanout.jpg" class="character_img">');
+  $(".q_count").html("負け");
+  $(".q_count").css("color","#FF0000");
+  setTimeout(function(){
+    $(".q_count").html('<span class="q_count_num">◯</span>回戦');
+    $(".q_count").css("color","#FFF100");
+  },1000);
+
+  ene ++;
+  if(num<6){
+
+    setTimeout(function(){
+      $(".hanzawa").html('<img src = "img/hanzawa.jpg" class="character_img">');
+    },time2);
+  }
+};
+
+// ５問終了時----------
+
+function game2fin(){
+  if(num < 6){
+
+    setTimeout(function(){
+      g2(13);
+      $(".choice").show();
+      
+    }, time2);
+  }else{
+    setTimeout(function(){
+
+      $(".game2").hide();
+      $(".timeup").show();
+      $(".finish_btn").show();
+
+      if(han > ene){
+        $(".enemy").html('<img src = "img/owadalose.jpeg" class="character_img">');
+        $(".hanzawa").html('<img src = "img/hanwin.jpg" class="character_img">');
+        $(".timeup").html("あなたの勝ち");
+        
+      }else{
+        $(".enemy").html('<img src = "img/owadawin.jpeg" class="character_img">');
+        $(".hanzawa").html('<img src = "img/hanlose.jpg" class="character_img">');
+        $(".timeup").html("あなたの負け");
+      }
+    }, time2);
+  }
+};
+
+// game2のクリックイベント---------------------------------------------------------
+
+$(".game2_start").on("click",function(){
+  g2(13);
+
+  $(".high").on("click",function(){
+    highlow();
+
+    if(h > o){
+      hanwin2();
+    }else if( h < o){
+      hanlose2();
+    }
+
+    game2fin();
+  });
+
+  $(".low").on("click",function(){
+    highlow();
+
+    if(h < o){
+      hanwin2();
+    }else if( h > o){
+      hanlose2();
+    }
+
+    game2fin();
+  });
+});    
+
+$(".return_opening").on("click",function(){
+  opening();
+  reset();
+
+});
+$(".return_owada").on("click",function(){
+  $(".timeup").hide();
+  $(".true_img").remove();
+  $(".enemy").html('<img src = "img/owada.jpg" class="character_img">');
+  $(".hanzawa").html('<img src = "img/hanzawa.jpg" class="character_img">');
+  $(".game1_fin").hide();
+  $(".game2_start").html('<button class="btn">スタート</button>');
+  $(".game2_start").show();
+  $(".finish_btn").hide();
+  reset();
+
+
+});
+
+
+
+
+
+
+    
+
+</script>
+</body>
+</html>
