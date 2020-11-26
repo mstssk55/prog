@@ -1,0 +1,265 @@
+html{
+    font-size: 62.5%;
+
+}
+img{
+    max-width: 100%;
+    height: auto;
+}
+body{
+    margin:0;
+    padding:0;
+    text-align:left;
+    font-size: 2.4rem;
+    width:100%;
+    background-color: #E9F2FA;
+    font-family: "Arial",'ヒラギノ角ゴ Pro W3', Hiragino Kaku Gothic Pro, "メイリオ", Meiryo, sans-serif;
+
+}
+header{
+    height: 80px;
+
+}
+h1{
+    font-size: 3.6rem;
+    margin: 22px 0 22px 40px;
+}
+#tab{
+    margin: 20px 40px 0;
+    display: flex;
+    justify-content: center;
+    height: 40px;
+}
+
+#tab a{
+    width: 50%;
+    display: inline-block;
+    border-width: 1px 1px 0px 1px;
+    border-style: solid;
+    border-color: #00437C;
+    text-decoration: none;
+    color: #00437C;
+    font-weight: bold;
+    letter-spacing: 0.5rem;
+    text-align: center;
+    padding: 10px;
+    
+    
+}
+
+.url_tab{
+    background-color: #A0E3EB;
+}
+.url_tab:hover{
+    opacity: 70%;
+}
+.code_tab{
+    background-color: #A0ADEB;
+}
+.code_tab:hover{
+    opacity: 70%;
+}
+
+#tab a:hover{
+text-decoration: underline;
+
+}
+
+
+#tab_body{
+    display: none;
+    margin: 0 40px;
+
+}
+
+#url_form,#code_form{
+    border: 1px solid #00437C;
+    margin-top: -1px;
+}
+#url_form{
+    background-color: #A0E3EB;
+}
+#code_form{
+    background-color: #A0ADEB;
+}
+
+.item_list{
+    margin: 20px 40px;
+    display: flex;
+    justify-content: center;
+}
+.item_list li{
+    margin: 0 40px 40px 0;
+}
+.item_list li:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+label{
+    font-size: 2rem;
+}
+input[type*="radio"]{
+    margin: 0 10px 0 0;
+}
+
+#url_key,#url_memo,#code_key{
+    margin: 0 0 40px 0;
+    width: 600px;
+
+    box-sizing: border-box;
+    font-size: 1.6rem;
+    border: solid 1px;
+    border-color: #00437C;
+    padding: 12px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;    
+}
+.form_text{
+    margin: 0 0 10px 0;
+    font-size: 1.8rem;
+}
+#url_save,#code_save{
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: none;
+    display: block;
+    background-color: #DADD65;
+    color: #fff;
+    font-size: 2rem;
+    width: 264px;
+    margin: auto;
+    padding: 14px 0;
+    border: 1px solid #00437C;
+}
+#url_save:hover,#code_save:hover{
+    opacity: 80%;
+    cursor: pointer;
+
+}
+
+
+textarea{
+    margin: 0 40px 20px 40px;
+    width: 700px;
+    height: 180px;
+    padding: 12px;
+    font-size:80%;
+    box-shadow: 3px 3px 3px 3px #555;
+  }
+.form_input{
+    text-align: center;
+    padding: 0 0 20px;
+}
+
+#save_list{
+    display: flex;
+    justify-content: space-between;
+    margin: 100px 40px 0 40px;
+
+}
+#save_url,#save_code{
+    width: 48%;
+}
+#save_list .selecter{
+    background-color: #A0E3EB;
+    border: 1px solid #00437C;
+
+}
+#save_code .selecter{
+    background-color: #A0ADEB;
+    border: 1px solid #00437C;
+
+}
+
+
+#url_select,#code_select{
+    text-align: center;
+    display: block;
+    margin: auto;
+    border: none;
+    
+}
+#save_url #url_select{
+    background-color: #A0E3EB;
+    padding: 10px;
+}
+#save_code #code_select{
+    background-color: #A0ADEB;
+
+    padding: 10px;
+
+    
+}
+.save_items{
+    border: 1px solid #00437C;
+    padding: 10px 20px 10px 20px;
+}
+.save_category{
+    font-size: 1.8rem;
+    background-color: #A0E3EB;
+    padding: 5px;
+    width: 100px;
+    text-align: center;
+    margin: 0 10px 10px;
+}
+.save_title{
+    border-bottom: 1px solid #00437C;
+    margin: 0 0 10px;
+
+}
+.save_link a{
+    color: #0000EE;
+}
+
+.save_items div{
+    display: flex;
+    align-items: center;
+}
+#insertid{
+    width: 16px;
+    height: 16px;
+}
+.trash_url,.trash_code{
+    cursor: pointer;
+    margin: 0 10px;
+}
+
+footer{
+    background-color: #fff;
+    border-bottom:1px solid #ccc;
+    text-align: center;
+}
+code {
+    font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+    font-size: 1.4rem;
+    line-height: 1.4;
+}
+pre{
+    background-color: #eeeeee;
+    padding: 20px;
+    border: 1px solid #00437C;
+}
+
+.php{
+    background-color: #CBD546;
+}
+.html_css{
+    background-color: #C7EBA0;
+}
+.js_jquery{
+    background-color: #EBA0C8;
+}
+.programing{
+    background-color: #EBC3A0;
+}
+.other{
+    background-color: #A0C8EB;
+}
+
+.bookmark_url,.bookmark_code{
+    cursor: pointer;
+}
+
