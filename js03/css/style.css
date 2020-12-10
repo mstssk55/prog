@@ -1,0 +1,91 @@
+html{
+    font-size: 62.5%;
+
+}
+img{
+    max-width: 100%;
+    height: auto;
+}
+body{
+    margin:0;
+    padding:0;
+    text-align:left;
+    font-size: 2.4rem;
+    width:100%;
+    background-color: #E9F2FA;
+    font-family: "Arial",'ヒラギノ角ゴ Pro W3', Hiragino Kaku Gothic Pro, "メイリオ", Meiryo, sans-serif;
+
+}
+
+/* 全体の表示----------------------- */
+#chat{
+    display: flex;
+}
+
+/* 宛先一覧 ------------------------*/
+#people{
+    padding: 20px ;
+}
+.people_line{
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid;
+    padding: 20px;
+    cursor: pointer;
+}
+.people_line:hover{
+    background-color: #fff;
+
+}
+.people_eye{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 0 30px 0 0;
+}
+
+/* チャット欄----------- */
+#output{
+    height: 600px;
+    overflow: auto;
+}
+
+.chat_icon{
+    border-radius: 50%;
+    margin: 0 10px 0 0;
+}
+.chat_uname{
+    font-size: 1.6rem;
+    margin: 0 20px 0 0;
+}
+.chat_date{
+    font-size: 1.2rem;
+}
+.from{
+    display: flex;
+    align-items: center;
+    margin: 40px 0 20px 0;
+}
+.chatright{
+    text-align: right;
+    margin: 0 20px 0 0;
+}
+/* other欄-------------------------- */
+#u_icon{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 30px 20px 0 0;
+}
+#your{
+    display: flex;
+    align-items: center;
+    margin: 0 0 30px 0;
+}
+.username{
+    margin: 30px 0 0 0;
+}
+
+
+
+
