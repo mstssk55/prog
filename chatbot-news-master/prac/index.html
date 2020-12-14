@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+    {% block content %}
+    <div class="scraping">
+        <div class="col-md-12">
+            <h5 class="card-title">TechCrunch 新着記事</h5>
+
+            {% for tech in tech_array %}
+                <div class="card mt-5">
+                    <div class="card-body">
+                        <a href="{{ tech[1]}}" class="urllink">{{ tech[0] }}</a>
+                        <p class="dis">{{ tech[2]}}... <a href="{{ tech[1]}}" class="continue">続きを読む</a></p>
+                    </div>
+                    <img src="{{tech[3]}}" alt="">
+
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+  {% endblock %}

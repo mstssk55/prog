@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>myMemoPad</title>
+<script src="/static/jquery-2.1.3.min.js"></script>
+
+<link rel="stylesheet" href="{{ url_for('static',filename='reset.css')}}">
+<link rel="stylesheet" type=text/css href="{{ url_for('static',filename='sample.css')}}">
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+</head>
+<body>
+
+
+    <!-- ヘッダー部分---------------------------------------------------------- -->
+<header>
+<h1>MemoPad</h1>
+</header>
+<main>
+
+    <!-- タブ切り分け---------------------------------------------------------- -->
+
+    <div id="tab">
+        <a href="#tab" class="url_tab">URL</a>
+        <a href="#tab" class="code_tab">CODE</a>
+    </div>
+    <div id="tab_body">
+        <div id="url_form">
+            <ul class="item_list">
+                <li><label for="htmlcss"><input type="radio" name="category" id="htmlcss" value="html/css" class="radio-item">html_css</label></li>
+                <li><label for="jsjquery"><input type="radio" name="category" id="jsjquery" value="js/jquery" class="radio-item">js_jquery</label></li>
+                <li><label for="php"><input type="radio" name="category" id="php" value="php" class="radio-item">php</label></li>
+                <li><label for="pg"><input type="radio" name="category" id="pg" value="プログラミング全般" class="radio-item">programing</label></li>
+                <li><label for="other"><input type="radio" name="category" id="other" value="その他" class="radio-item">other</label></li>
+            </ul>
+            <div class="form_input">
+                <p class="form_text">タイトル</p>
+                <input id="url_key" type="text">
+                <p class="form_text">URL</p>
+                <input id="url_memo" type="url">
+                <button id="url_save">save</button>
+            </div>
+        </div>
+        <div id="code_form">
+            <ul class="item_list">
+                <li><label for="htmlcss"><input type="radio" name="category" id="htmlcss" value="html/css" class="radio-item">html_css</label></li>
+                <li><label for="jsjquery"><input type="radio" name="category" id="jsjquery" value="js/jquery" class="radio-item">js_jquery</label></li>
+                <li><label for="php"><input type="radio" name="category" id="php" value="php" class="radio-item">php</label></li>
+                <li><label for="pg"><input type="radio" name="category" id="pg" value="プログラミング全般" class="radio-item">programing</label></li>
+                <li><label for="other"><input type="radio" name="category" id="other" value="その他" class="radio-item">other</label></li>
+            </ul>
+            <div class="form_input">
+                <p class="form_text">タイトル</p>
+                <input id="code_key" type="text">
+                <p class="form_text">コード</p>
+                <textarea id="code_memo"></textarea>
+                <button id="code_save">save</button>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+        <!-- リスト部分 --------------------------------------------------->
+<ul id="save_list">
+    <div id="save_url">
+        <div class="selecter">
+            <select name="url_select" id="url_select">
+                <option value="recent">最近登録したURL</option>
+                <option value="bookmark">お気に入りURL</option>
+                <option value="popular">よく使うURL</option>
+            </select>
+        </div>
+        <li  id="url_list"></li>
+    </div>
+    <div id="save_code">
+        <div class="selecter">
+            <select name="code_select" id="code_select">
+                <option value="recent">最近登録したURL</option>
+                <option value="bookmark">お気に入りURL</option>
+                <option value="popular">よく使うURL</option>
+            </select>
+        </div>
+        <li id="code_list"></li>
+    </div>
+</ul>
+
+<!-- <table id="list">
+</table> -->
+{% block content %}
+{% endblock %}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+
+// タブの選択------------------------------------------------------------------
+// $(window).keypress(function (e) {
+//     if(e.which == 13){
+//         $("#url_save").click();
+//     }
+// });
+
+$(".url_tab").on("click",function(){
+    $("#tab_body").show();
+    $("#url_form").show();
+    $("#code_form").hide();
+});
+$(".code_tab").on("click",function(){
+    $("#tab_body").show();
+    $("#url_form").hide();
+    $("#code_form").show();
+
+});
+
+//ページ読み込み：保存データ取得表示url
+const obj = localStorage.getItem("url_list");
+
+// 初めてかどうかの判定-------------------
+if(obj == null){
+    localStorage.setItem("url_list","[]");
+}else{
+    const p = JSON.parse(obj);
+    for(let i = 0;i<p.length;i++){
+        if(p[i].bookmark == 1){
+            const h = '<ul class="save_items url_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkon.png" id="bookmark'+i+'" class="bookmark_url" alt=""></div><li class="save_title">'+p[i].title+'</li><li class="save_link"><a href="'+p[i].url+'" target="_blank" id="clickurl'+i+'"class="click_url">'+p[i].url+'</a></li></ul>';
+            $("#url_list").prepend(h);
+
+        }else if(p[i].bookmark == 0){
+            const h = '<ul class="save_items url_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkoff.png" id="bookmark'+i+'" class="bookmark_url" alt=""></div><li class="save_title">'+p[i].title+'</li><li class="save_link"><a href="'+p[i].url+'" target="_blank" id="clickurl'+i+'"class="click_url">'+p[i].url+'</a></li></ul>';
+            $("#url_list").prepend(h);
+        };
+
+
+    };
+};
+//ページ読み込み：保存データ取得表示code
+const objcode = localStorage.getItem("code_list");
+if(objcode == null){
+    localStorage.setItem("code_list","[]");
+}else{
+    const pcode = JSON.parse(objcode);
+    for(let i = 0;i<pcode.length;i++){
+        if(pcode[i].bookmark == 1){
+            const h = '<ul class="save_items code_id'+i+'"><div><li class="save_category '+pcode[i].category+'">'+pcode[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_code" alt=""><img src="/static/img/bookmarkon.png" id="bookmark'+i+'" class="bookmark_code" alt=""></div><li class="save_title">'+pcode[i].title+'</li><li><pre><code id="clickcode'+i+'"class="click_code prettyprint linenums">'+pcode[i].code+'</code></pre></li></ul>';
+            $("#code_list").prepend(h);
+
+        }else if(pcode[i].bookmark == 0){
+            const h = '<ul class="save_items code_id'+i+'"><div><li class="save_category '+pcode[i].category+'">'+pcode[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_code" alt=""><img src="/static/img/bookmarkoff.png" id="bookmark'+i+'" class="bookmark_code" alt=""></div><li class="save_title">'+pcode[i].title+'</li><li><pre><code id="clickcode'+i+'"class="click_code prettyprint linenums">'+pcode[i].code+'</code></pre></li></ul>';
+            $("#code_list").prepend(h);
+        };
+
+
+
+
+    };
+};
+
+
+
+//要素を一つ削除------------------------
+function del_url(){
+    $(".trash_url").on("click",function(){
+        const trash_obj = localStorage.getItem("url_list");
+        const ptrash = JSON.parse(trash_obj);
+        const id = $(this).attr("id");
+        if(window.confirm("削除しますか？")){
+            ptrash.splice(id,1);
+            let json = JSON.stringify(ptrash);
+            localStorage.setItem("url_list",json);
+            $(".url_id"+id).hide();
+        };
+        $(".trash_url").off("click");
+        del_url();
+        del_code();
+
+
+
+    });
+
+};
+
+
+function del_code(){
+    $(".trash_code").on("click",function(){
+        const trash_obj = localStorage.getItem("code_list");
+        const ptrash = JSON.parse(trash_obj);
+        const id = $(this).attr("id");
+        if(window.confirm("削除しますか？")){
+            ptrash.splice(id,1);
+            let json = JSON.stringify(ptrash);
+            localStorage.setItem("code_list",json);
+            $(".code_id"+id).hide();
+        };
+        $(".trash_code").off("click");
+        del_code();
+        del_url();
+
+    });
+};
+
+del_url();
+del_code();
+
+
+// function enterkey(){
+//     $(window).keypress(function (e) {
+//         if(e.which == 13){
+//             $("#url_save").click();
+//             $("#code_save").click();
+//         }
+//         $(window).off("keypress");
+//         enterkey();
+//     });
+// };
+// enterkey();
+
+
+//urlのsave クリックイベント
+$("#url_save").on("click",function(){
+    
+    // ラジオボタンの値取得------------------------
+    const category = $("input[name='category']:checked").parent().text();
+    const bookmark = 0;
+    const click = 0;
+
+    // 入力内容取得-----------------------------
+    const key = $("#url_key").val();
+    const v = $("#url_memo").val();
+    // localstrageから現在の配列取得&解凍-----------------------------
+    const j = localStorage.getItem("url_list");
+    const p = JSON.parse(j);   
+    let url_obj = p;
+    // 入力内容を配列に追加-----------------------------
+    url_obj.push({ kind:"url",category:category,title:key,url:v,bookmark:bookmark,click:click});
+    // JSON&ローカルストレージに保存--------------------
+    let json = JSON.stringify(url_obj);
+    localStorage.setItem("url_list",json);
+    // リストに追加--------------------
+    const i = p.length -1;
+    const h = '<ul class="save_items url_id'+i+'"><div><li class="save_category '+category+'">'+category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkoff.png" id="bookmark'+i+'" class="bookmark_url" alt=""></div><li class="save_title">'+key+'</li><li class="save_link"><a href="'+v+'" target="_blank" id="clickurl'+i+'"class="click_url">'+v+'</a></li></ul>';
+    $("#url_list").prepend(h);
+    del_url();
+
+    // フォームをクリア--------------------------------
+
+    const keyid =document.getElementById("url_key");
+    keyid.value = "";
+    const vid =document.getElementById("url_memo");
+    vid.value = "";
+});
+
+
+//codeのsave クリックイベント
+$("#code_save").on("click",function(){
+    const category = $("input[name='category']:checked").parent().text();
+    const bookmark = 0;
+    const click = 0;
+    const key = $("#code_key").val();
+    let v = $("#code_memo").val();
+    // code特殊文字変換----------------------------------
+    v = v.replace(/&/g, "&amp;");
+    v = v.replace(/</g, "&lt;");
+    v = v.replace(/</g,'&lt;');
+    v = v.replace(/"/g, "&quot;");
+    v = v.replace(/'/g, "&#039;");
+
+    const j = localStorage.getItem("code_list");
+    const p = JSON.parse(j);   
+    let code_obj = p;
+    code_obj.push({ kind:"code",category:category,title:key,code:v,bookmark:bookmark,click:click});
+    let json = JSON.stringify(code_obj);
+    localStorage.setItem("code_list",json);
+    const i = p.length -1;
+    const h = '<ul class="save_items code_id'+i+'"><div><li class="save_category '+category+'">'+category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_code" alt=""><img src="/static/img/bookmarkoff.png" id="bookmark'+i+'" class="bookmark_code" alt=""></div><li class="save_title">'+key+'</li><li><pre><code id="clickcode'+i+'"class="click_code prettyprint linenums">'+v+'</code></pre></li></ul>';
+    $("#code_list").prepend(h);
+    del_code();
+
+    const keyid =document.getElementById("code_key");
+    keyid.value = "";
+    const vid =document.getElementById("code_memo");
+    vid.value = "";
+
+
+
+
+});
+
+
+$("body").on("click",".bookmark_url",function(){
+    const bookmark_obj = localStorage.getItem("url_list");
+    const pbookmark = JSON.parse(bookmark_obj);
+    let id = $(this).attr("id");
+    id = id.replace(/bookmark/g,"");
+
+    if(pbookmark[id].bookmark == 0){
+        pbookmark[id].bookmark = 1;
+        $(this).attr("src","/static/img/bookmarkon.png");
+        let json = JSON.stringify(pbookmark);
+        localStorage.setItem("url_list",json);
+
+    }else{
+        pbookmark[id].bookmark = 0;
+        $(this).attr("src","/static/img/bookmarkoff.png");
+        let json = JSON.stringify(pbookmark);
+        localStorage.setItem("url_list",json);
+    };
+    $(".bookmark_url").off("click");
+
+});
+
+$("body").on("click",".bookmark_code",function(){
+    const bookmark_obj = localStorage.getItem("code_list");
+    const pbookmark = JSON.parse(bookmark_obj);
+    let id = $(this).attr("id");
+    id = id.replace(/bookmark/g,"");
+
+    if(pbookmark[id].bookmark == 0){
+        pbookmark[id].bookmark = 1;
+        $(this).attr("src","/static/img/bookmarkon.png");
+        let json = JSON.stringify(pbookmark);
+        localStorage.setItem("code_list",json);
+
+    }else{
+        pbookmark[id].bookmark = 0;
+        $(this).attr("src","/static/img/bookmarkoff.png");
+        let json = JSON.stringify(pbookmark);
+        localStorage.setItem("code_list",json);
+    };
+    $(".bookmark_code").off("click");
+
+});
+
+$("body").on("click",".click_url",function(){
+
+    const click_obj = localStorage.getItem("url_list");
+    const pclick = JSON.parse(click_obj);
+    let id = $(this).attr("id");
+    id = id.replace(/clickurl/g,"");
+    let num = pclick[id].click;
+    num ++;
+    pclick[id].click = num;
+    let json = JSON.stringify(pclick);
+    localStorage.setItem("url_list",json);
+
+    $(".click_url").off("click");
+});
+
+$("body").on("click",".click_code",function(){
+const code_obj = localStorage.getItem("code_list");
+const pclick = JSON.parse(code_obj);
+let id = $(this).attr("id");
+id = id.replace(/clickcode/g,"");
+let num = pclick[id].click;
+num ++;
+pclick[id].click = num;
+let json = JSON.stringify(pclick);
+localStorage.setItem("code_list",json);
+
+$(".code_url").off("click");
+});
+
+
+
+
+//2.clear クリックイベント
+$("#clear").on("click",function(){
+
+    localStorage.clear();
+    $("#list").empty();
+});
+
+
+
+$("body").on("change","#url_select",function(){
+    const object = localStorage.getItem("url_list");
+
+
+    if( $(this).val() == "recent"){
+        $("#url_list .save_items").remove();
+        const p = JSON.parse(object);
+
+        for(let i = 0;i<p.length;i++){
+            if(p[i].bookmark == 1){
+                const h = '<ul class="save_items url_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkon.png" id="bookmark'+i+'" class="bookmark_url" alt=""></div><li class="save_title">'+p[i].title+'</li><li class="save_link"><a href="'+p[i].url+'" target="_blank" id="clickurl'+i+'"class="click_url">'+p[i].url+'</a></li></ul>';
+                $("#url_list").prepend(h);
+            }else if(p[i].bookmark == 0){
+                const h = '<ul class="save_items url_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkoff.png" id="bookmark'+i+'" class="bookmark_url" alt=""></div><li class="save_title">'+p[i].title+'</li><li class="save_link"><a href="'+p[i].url+'" target="_blank" id="clickurl'+i+'"class="click_url">'+p[i].url+'</a></li></ul>';
+                $("#url_list").prepend(h);
+            };
+        };
+    }else if($(this).val() == "bookmark"){
+        $("#url_list .save_items").remove();
+        const p = JSON.parse(object);
+        for(let i = 0;i<p.length;i++){
+            if(p[i].bookmark == 1){
+                const h = '<ul class="save_items url_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkon.png" id="bookmark'+i+'" class="bookmark_url" alt=""></div><li class="save_title">'+p[i].title+'</li><li class="save_link"><a href="'+p[i].url+'" target="_blank" id="clickurl'+i+'"class="click_url">'+p[i].url+'</a></li></ul>';
+                $("#url_list").prepend(h);
+            };
+        };
+    }else if($(this).val() == "popular"){
+        $("#url_list .save_items").remove();
+        const p = JSON.parse(object);
+        p.sort(function(a,b){
+            if(a.click<b.click) return -1;
+            if(a.click > b.click) return 1;
+            return 0;
+        });
+        for(let i = 0;i<p.length;i++){
+            if(p[i].bookmark == 1){
+                const h = '<ul class="save_items url_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkon.png" id="bookmark'+i+'" class="bookmark_url" alt=""></div><li class="save_title">'+p[i].title+'</li><li class="save_link"><a href="'+p[i].url+'" target="_blank" id="clickurl'+i+'"class="click_url">'+p[i].url+'</a></li></ul>';
+                $("#url_list").prepend(h);
+            }else if(p[i].bookmark == 0){
+                const h = '<ul class="save_items url_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkoff.png" id="bookmark'+i+'" class="bookmark_url" alt=""></div><li class="save_title">'+p[i].title+'</li><li class="save_link"><a href="'+p[i].url+'" target="_blank" id="clickurl'+i+'"class="click_url">'+p[i].url+'</a></li></ul>';
+                $("#url_list").prepend(h);
+            };
+        };
+
+
+
+    };
+});
+
+$("body").on("change","#code_select",function(){
+    const object = localStorage.getItem("code_list");
+
+
+    if( $(this).val() == "recent"){
+        $("#code_list .save_items").remove();
+        const p = JSON.parse(object);
+
+        for(let i = 0;i<p.length;i++){
+            if(p[i].bookmark == 1){
+                const h = '<ul class="save_items code_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkon.png" id="bookmark'+i+'" class="bookmark_code" alt=""></div><li class="save_title">'+p[i].title+'</li><li><pre><code id="clickcode'+i+'"class="click_code prettyprint linenums">'+p[i].code+'</code></pre></li></ul>';
+                $("#code_list").prepend(h);
+            }else if(p[i].bookmark == 0){
+                const h = '<ul class="save_items code_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkoff.png" id="bookmark'+i+'" class="bookmark_code" alt=""></div><li class="save_title">'+p[i].title+'</li><li><pre><code id="clickcode'+i+'"class="click_code prettyprint linenums">'+p[i].code+'</code></pre></li></ul>';
+                $("#code_list").prepend(h);
+            };
+        };
+    }else if($(this).val() == "bookmark"){
+        $("#code_list .save_items").remove();
+        const p = JSON.parse(object);
+        for(let i = 0;i<p.length;i++){
+            if(p[i].bookmark == 1){
+                const h = '<ul class="save_items code_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkon.png" id="bookmark'+i+'" class="bookmark_code" alt=""></div><li class="save_title">'+p[i].title+'</li><li><pre><code id="clickcode'+i+'"class="click_code prettyprint linenums">'+p[i].code+'</code></pre></li></ul>';
+                $("#code_list").prepend(h);
+            };
+        };
+    }else if($(this).val() == "popular"){
+        $("#code_list .save_items").remove();
+        const p = JSON.parse(object);
+        p.sort(function(a,b){
+            if(a.click<b.click) return -1;
+            if(a.click > b.click) return 1;
+            return 0;
+        });
+        for(let i = 0;i<p.length;i++){
+            if(p[i].bookmark == 1){
+                const h = '<ul class="save_items code_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkon.png" id="bookmark'+i+'" class="bookmark_code" alt=""></div><li class="save_title">'+p[i].title+'</li><li><pre><code id="clickcode'+i+'"class="click_code prettyprint linenums">'+p[i].code+'</code></pre></li></ul>';
+                $("#code_list").prepend(h);
+            }else if(p[i].bookmark == 0){
+                const h = '<ul class="save_items code_id'+i+'"><div><li class="save_category '+p[i].category+'">'+p[i].category+'</li><p>No.<span id="insertid">'+i+'</span></p><img src="/static/img/trash.png" id="'+i+'" class="trash_url" alt=""><img src="/static/img/bookmarkoff.png" id="bookmark'+i+'" class="bookmark_code" alt=""></div><li class="save_title">'+p[i].title+'</li><li><pre><code id="clickcode'+i+'"class="click_code prettyprint linenums">'+p[i].code+'</code></pre></li></ul>';
+                $("#code_list").prepend(h);
+            };
+        };
+
+
+
+
+    };
+});
+
+
+
+
+
+</script>
+</body>
+</html>
