@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <div id="h_name">hotel A</div>
+    <div id="r_num">
+        <p>部屋数</p>
+        <dl>
+            <dt>ダブルルーム</dt>
+            <dd>20</dd>
+            <dt>ツインルーム</dt>
+            <dd>20</dd>
+            <dt>シングルルーム</dt>
+            <dd>20</dd>
+            <dt>合計</dt>
+            <dd>60</dd>
+        </dl>
+    </div>
+    <table>
+        <tr id="month"></tr>
+        <tr id="target">
+            <td id="t_0">1000000</td>
+            <td id="t_1">1200000</td>
+            <td id="t_2">900000</td>
+            <td id="t_3">1300000</td>
+            <td id="t_4">1000000</td>
+            <td id="t_5">1000000</td>
+            <td id="t_6">1000000</td>
+            <td id="t_7">1100000</td>
+            <td id="t_8">800000</td>
+            <td id="t_9">900000</td>
+            <td id="t_10">1000000</td>
+            <td id="t_11">1400000</td>
+        </tr>
+    </table>
+    <input type="file" id="file">
+    <div id="t_btn">
+        <button id="btn">登録</button>
+    </div>
+
+    <canvas id="drowarea" width="1200" height="1800" style="border:1px solid blue;"></canvas>
+
+    <script>
+        // 1: ボタンを取得してchangeイベントの設定
+        const loadBtn = document.querySelector("#file");
+        loadBtn.addEventListener("change", upload, false);
+
+        function upload(event) {
+            // 2：chekFileReader関数でFileAPIにブラウザが対応してるかチェック
+            if (!checkFileReader()) {
+                alert("エラー：FileAPI非対応のブラウザです。");
+            } else {
+                // 3: 選択されたファイル情報を取得
+                const file = event.target.files[0];
+                const type = file.type; // MIMEタイプ
+                const size = file.size; // ファイル容量（byte）
+                const limit = 10000; // byte, 10KB
+
+                // MIMEタイプの判定
+                if (type == "image/jpeg") {
+                    alert("画像はアップロードできません");
+                    loadBtn.value="";
+                    return;
+                };
+
+                //readerオブジェクトを作成
+                const reader = new FileReader();
+                // ファイル読み取りを実行
+                reader.readAsText(file);
+
+                // 4：CSVファイルを読み込む処理とエラー処理をする
+                reader.onload = function(event) {
+                    const result = event.target.result;
+                    makeCSV(result);
+                };
+
+                //読み込めなかった場合のエラー処理
+                reader.onerror = function() {
+                    alert("エラー：ファイルをロードできません。");
+                };
+            };
+        };
+
+        const data =[];
+
+        //csvをうまく出力する
+        function makeCSV(csvdata) {
+            //csvデータを1行ごとに配列にする
+            const tmp = csvdata.split("\n");
+
+            //csvデータをそのままtableで出力する
+            const tabledata = $("#resulttable");
+            let htmldata = "<table>";
+
+            //６：1行のデータから各項目（各列）のデータを取りだして、2次元配列にする
+            for (let i = 0; i < tmp.length; i++) {
+                //csvの1行のデータを取り出す
+                const row_data = tmp[i];
+                data[i] = row_data.split(",");
+                //7：dataに入ってる各列のデータを出力する為のデータを作る
+                htmldata += "<tr>";
+                for (let j = 0; j < data[i].length; j++) {
+                    //各行の列のデータを個別に出力する
+                    htmldata += "<td>" + data[i][j] + "</td>";
+                };
+                htmldata += "</tr>";
+            };
+
+            // 8： データをWebページに出力する
+            htmldata += "</table>";
+            tabledata.append(htmldata);
+        };
+        // ファイルアップロード判定
+        function checkFileReader() {
+            let isUse = false;
+            if (window.File && window.FileReader && window.FileList && window.Blob){
+                isUse = true;
+            };
+            return isUse;
+        };
+
+
+        // 開始月----------------------------
+        const start_m =11;
+        // 月の挿入--------------------------
+        for(i= 0 ;i<12;i++){
+            const sm = start_m + i;
+            let month = "";
+            if(sm>12){
+                month = sm-12
+            }else{
+                month = sm
+            };
+            let sm_i = '<th>'
+                sm_i +=month+'月';
+                sm_i +='</th>';
+            $("#month").append(sm_i);
+
+            let t_form = '<label for="">'
+                t_form +=month +'月';
+                t_form +='<input type="text" id="target'+i+'">'
+                t_form +='</label>'
+            $("#form").append(t_form);
+        };
+
+        const can = $("#drowarea")[0]; //CanvasElement
+        const ctx = can.getContext("2d"); //描画するための準備！
+
+        const w = 1200;
+        const h = 1800;
+
+        // 目標値を配列に追加----------------------
+        let array = [];
+        for(i=0;i<12;i++){
+            const t = $("#t_"+i).text();
+            array.unshift(t);
+        };
+
+        $("#btn").on("click",function(){
+
+
+            // グラフ1のx軸-----------------
+            ctx.beginPath();
+            ctx.strokStyle = "#333333";
+            ctx.lineWidth = 1;
+            ctx.lineCap = "square"
+            const g1x = h-1500;
+            ctx.moveTo(w-1180,g1x);
+            ctx.lineTo(w-20,g1x);
+            ctx.stroke();
+            ctx.closePath();
+
+            // グラフ2のx軸-----------------
+            ctx.beginPath();
+            ctx.strokStyle = "#333333";
+            ctx.lineWidth = 1;
+            ctx.lineCap = "square"
+            const g2x = h-1150;
+            ctx.moveTo(w-1180,g2x);
+            ctx.lineTo(w-20,g2x);
+            ctx.stroke();
+            ctx.closePath();
+
+
+            // csvの売上を配列に追加-------------------------
+            const month_array = {};
+            for(i=0;i<12;i++){
+                const month = start_m + i;
+                let m = "";
+                if(month>12){
+                    m = month-12 
+                    month_array[m] = 0;
+                }else{
+                    m = month
+                    month_array[m] = 0;
+                };
+
+            };
+            for(i = 1;i<data.length;i++){
+                let month = new Date(data[i][3])
+                month = month.getMonth()+1; 
+                if(data[i].length == 40){
+                    month_array[month] += Number(data[i][20]);
+                };
+            };
+
+            // 実績を配列に追加-----------------
+            for(i=0;i<12;i++){
+                const s = month_array[i+1];
+                array.unshift(s);
+            };
+
+            // グラフ1最大値の取得-----------------
+            const aryMax = function(a,b){return Math.max(a,b);}
+            let max = array.reduce(aryMax);
+
+
+            function path(){
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
+            };
+
+            //棒グラフの基準値------------------------------------             
+            const maxth = g1x-20;
+            // グラフ1の目標値------------------------------------
+            for(i=0;i<12;i++){
+                ctx.beginPath();
+                ctx.fillStyle= "#ff0000";
+                ctx.strokeStyle = "#0000ff";
+                const target = $("#t_"+i).text();
+                const th = maxth*target/max;
+                ctx.rect(60+i*60,g1x-th,20,th);
+                path();
+            };
+            // グラフ1の実績値------------------------------------
+            for(i=0;i<12;i++){
+                ctx.beginPath();
+                ctx.fillStyle= "#0000ff";
+                ctx.strokeStyle = "#0000ff";
+                const month = start_m + i;
+                let m = "";
+                let sales = "";
+                if(month>12){
+                    m = month-12 
+                    sales = month_array[m];
+                }else{
+                    m = month
+                    sales = month_array[m];
+                };
+                const sh = maxth*sales/max;
+                ctx.rect(80+i*60,g1x-sh,20,sh);
+                path();
+            };
+            // グラフ2の最大値の取得------------------------------------
+            let max2 = 0;
+            let tt = 0;
+            let ts = 0;
+            for(i=0;i<12;i++){
+                let total = $("#t_"+i).text();
+                total = Number(total);
+                tt += total;
+                const month = start_m + i;
+                let m = "";
+                let totals = "";
+                if(month>12){
+                    m = month-12 
+                    totals = month_array[m];
+                }else{
+                    m = month
+                    totals = month_array[m];
+                };
+
+                totals = Number(totals);
+                ts += totals;
+                if(tt>ts){
+                    max2 = tt;
+                }else{
+                    max2 = ts;
+                };
+            };
+
+
+            // グラフ2の目標値------------------------------------
+            let total_t = 0;
+            for(i=0;i<12;i++){
+                ctx.beginPath();
+                ctx.fillStyle= "#ff0000";
+                ctx.strokeStyle = "#0000ff";
+                let total = $("#t_"+i).text();
+                total = Number(total); 
+                total_t += total
+                const th = maxth*total_t/max2;
+                ctx.rect(60+i*60,g2x-th,20,th);
+                path();
+            };
+
+             // グラフ2の実績値------------------------------------
+            let total_s = 0;
+            for(i=0;i<12;i++){
+                ctx.beginPath();
+                ctx.fillStyle= "#0000ff";
+                ctx.strokeStyle = "#0000ff";
+                const month = start_m + i;
+                let m = "";
+                let total = "";
+                if(month>12){
+                    m = month-12 
+                    total = month_array[m];
+                }else{
+                    m = month
+                    total = month_array[m];
+                };
+                total = Number(total); 
+                total_s += total
+                const th = maxth*total_s/max2;
+                ctx.rect(80+i*60,g2x-th,20,th);
+                path();
+            };
+
+        });
+
+
+            // ctx.beginPath();
+            // ctx.arc(100,100,100,0*Math.PI/180,(360*(80/100))*Math.PI/180,false);
+            // ctx.lineTo(100,100);
+            // ctx.fillStyle = "#ff0000";
+            // ctx.fill();
+            // ctx.closePath();
+
+
+
+            
+
+   
+
+
+
+
+    </script>
+    
+</body>
+</html>
