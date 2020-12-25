@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Map:Geolocation</title>
+<style>html,body{height:100%;}body{padding:0;margin:0;}h1{padding:0;margin:0;font-size:50%;}</style>
+</head>
+<body>
+
+
+<!-- MAP[START] -->
+<h1>Map:Geolocation</h1>
+<div id="myMap" style='width:60%;height:70%;float:left;'></div>
+<!-- MAP[END] -->
+<button id="btn">開始</button>
+
+<table id="table">
+    <tr>
+        <th>店舗名</th>
+        <th>営業時間</th>
+    </tr>
+</table>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=As44ze1HzIPANrGw0FxgU6cu1Q9bsJv_5JLlh3Bo7nN-w4B8JW6IkZshEG408tj4' async defer></script>
+<script src="js/BmapQuery.js"></script>
+<script>
+//****************************************************************************************
+// BingMaps&BmapQuery
+//****************************************************************************************
+//Init
+let n_lat = "";
+let n_lon = "";
+function GetMap(){
+    //------------------------------------------------------------------------
+    //1. Instance
+    //------------------------------------------------------------------------
+    const map = new Bmap("#myMap");
+
+    //------------------------------------------------------------------------
+    //2. geolocation: Display Map
+    //   map.geolocation(function(data:object){...});
+    //------------------------------------------------------------------------
+    map.geolocation(function(data) {
+        //location
+        const lat = data.coords.latitude;
+        const lon = data.coords.longitude;
+        n_lat = lat;
+        n_lon = lon; 
+        //Map
+        map.startMap(lat, lon, "load", 10);
+        //pin
+        map.pin(lat,lon,"#ff0000");
+
+        $("#btn").on("click", function(){
+        //送信データをObject変数で用意
+        //参考URL:https://api.gnavi.co.jp/api/manual/restsearch/
+            const data = {
+                keyid:"26683995813db2a6a9e853627ed7d708",
+                latitude:n_lat,
+                longitude:n_lon,
+                range:3
+            };
+            //Ajax（非同期通信）
+            axios.get('https://api.gnavi.co.jp/RestSearchAPI/v3/', {
+                params:data
+            })
+            .then(function (response) {
+                //データ受信成功！！showData関数にデータを渡す
+                showData(response.data);
+            }).catch(function (error) {
+                console.log(error);//通信Error
+            }).then(function () {
+                //console.log("Last");//通信OK/Error後に処理を必ずさせたい場合
+            });
+
+
+    
+
+        });
+
+        //*****************************************************
+        //ぐるなびデータ表示処理
+        //*****************************************************
+        function showData(data){
+            //データ確認用
+            console.log(data.rest);
+
+            //データを繰り返し処理で取得
+            const len  = data.rest.length; //データ数を取得
+            for( let i=0; i<len; i++){
+                $("#table").append('<tr><td>' + data.rest[i].name + '</td><td>' + data.rest[i].opentime + '</td></tr>');
+            };
+            for(i=0;i<len;i++){
+                map.pin(data.rest[i].latitude,data.rest[i].longitude,"#000000");
+                map.infobox(data.rest[i].latitude,data.rest[i].longitude, data.rest[i].name, data.rest[i].opentime);
+            }
+
+        }
+
+        
+    });
+    
+
+}
+
+//*****************************************************
+// Click Event
+// ぐるなびAPIへデータRequest → APIサーバーからresponseデータ取得
+//*****************************************************
+
+
+
+
+</script>
+</body>
+</html>
